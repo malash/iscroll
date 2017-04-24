@@ -1,4 +1,4 @@
-/*! iScroll v15.2.3 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
+/*! iScroll v15.2.4 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
 	window.webkitRequestAnimationFrame	||
@@ -420,7 +420,7 @@ function IScroll (el, options) {
 }
 
 IScroll.prototype = {
-	version: '15.2.3',
+	version: '15.2.4',
 
 	_init: function () {
 		this._initEvents();
@@ -881,7 +881,6 @@ IScroll.prototype = {
 	},
 
 	scrollTo: function (x, y, time, easing) {
-		console.warn('run');
 		easing = easing || utils.ease.circular;
 
 		this.isInTransition = this.options.useTransition && time > 0;
