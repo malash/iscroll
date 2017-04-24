@@ -1,4 +1,4 @@
-/*! iScroll v15.2.2 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
+/*! iScroll v15.2.3 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
 	window.webkitRequestAnimationFrame	||
@@ -418,7 +418,7 @@ function IScroll (el, options) {
 }
 
 IScroll.prototype = {
-	version: '15.2.2',
+	version: '15.2.3',
 
 	_init: function () {
 		this._initEvents();
@@ -647,7 +647,6 @@ IScroll.prototype = {
 			distanceY = Math.abs(newY - this.startY),
 			time = 0,
 			easing = '';
-
 		this.isInTransition = 0;
 		this.initiated = 0;
 		this.endTime = utils.getTime();
@@ -711,6 +710,11 @@ IScroll.prototype = {
 			// change easing function when scroller goes out of the boundaries
 			if ( newX > 0 || newX < this.maxScrollX || newY > 0 || newY < this.maxScrollY ) {
 				easing = utils.ease.quadratic;
+			}
+
+			// prevent auto scroll to pull down
+			if ( newY > 0) {
+				newY = 0;
 			}
 
 			this.scrollTo(newX, newY, time, easing);
@@ -784,7 +788,7 @@ IScroll.prototype = {
 		this.scrollerHeight	= rect.height;
 
 		this.maxScrollX		= this.wrapperWidth - this.scrollerWidth;
-		this.maxScrollY     = this.wrapperHeight - this.scrollerHeight - this.options.topOffset;
+		this.maxScrollY     = this.wrapperHeight - this.scrollerHeight;
 
 /* REPLACE END: refresh */
 
@@ -798,7 +802,7 @@ IScroll.prototype = {
 
 		if ( !this.hasVerticalScroll ) {
 			this.maxScrollY = 0;
-			this.scrollerHeight = this.scroller.offsetHeight - this.options.topOffset;
+			this.scrollerHeight = this.scroller.offsetHeight;
 		}
 
 		this.endTime = 0;
@@ -871,6 +875,7 @@ IScroll.prototype = {
 	},
 
 	scrollTo: function (x, y, time, easing) {
+		console.warn('run');
 		easing = easing || utils.ease.circular;
 
 		this.isInTransition = this.options.useTransition && time > 0;
