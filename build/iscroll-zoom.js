@@ -1,4 +1,4 @@
-/*! iScroll v5.2.0-snapshot ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
+/*! iScroll v15.2.1 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
 	window.webkitRequestAnimationFrame	||
@@ -350,7 +350,10 @@ function IScroll (el, options) {
 		HWCompositing: true,
 		useTransition: true,
 		useTransform: true,
-		bindToWrapper: typeof window.onmousedown === "undefined"
+		bindToWrapper: typeof window.onmousedown === "undefined",
+
+		// add support for pull down refresh
+		minScrollY: 0,
 	};
 
 	for ( var i in options ) {
@@ -416,7 +419,7 @@ function IScroll (el, options) {
 }
 
 IScroll.prototype = {
-	version: '5.2.0-snapshot',
+	version: '15.2.1',
 
 	_init: function () {
 		this._initEvents();
@@ -738,7 +741,7 @@ IScroll.prototype = {
 
 		if ( !this.hasVerticalScroll || this.y > 0 ) {
 			y = 0;
-		} else if ( this.y < this.maxScrollY ) {
+		} else if ( this.y < this.maxScrollY && this.y > this.minScrollY) {
 			y = this.maxScrollY;
 		}
 
@@ -776,7 +779,7 @@ IScroll.prototype = {
 
 		this.hasHorizontalScroll	= this.options.scrollX && this.maxScrollX < 0;
 		this.hasVerticalScroll		= this.options.scrollY && this.maxScrollY < 0;
-		
+
 		if ( !this.hasHorizontalScroll ) {
 			this.maxScrollX = 0;
 			this.scrollerWidth = this.wrapperWidth;
@@ -790,7 +793,7 @@ IScroll.prototype = {
 		this.endTime = 0;
 		this.directionX = 0;
 		this.directionY = 0;
-		
+
 		if(utils.hasPointer && !this.options.disablePointer) {
 			// The wrapper should have `touchAction` property for using pointerEvent.
 			this.wrapper.style[utils.style.touchAction] = utils.getTouchAction(this.options.eventPassthrough, true);
@@ -809,7 +812,7 @@ IScroll.prototype = {
 
 // INSERT POINT: _refresh
 
-	},	
+	},
 
 	on: function (type, fn) {
 		if ( !this._events[type] ) {
@@ -1035,6 +1038,7 @@ IScroll.prototype = {
 
 		return { x: x, y: y };
 	},
+
 	_initIndicators: function () {
 		var interactive = this.options.interactiveScrollbars,
 			customStyle = typeof this.options.scrollbars != 'string',

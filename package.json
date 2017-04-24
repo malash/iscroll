@@ -1,7 +1,7 @@
 {
   "name": "@tencent/news-iscroll",
   "description": "Smooth scrolling for the web",
-  "version": "15.2.0",
+  "version": "15.2.1",
   "homepage": "http://iscrolljs.com",
   "author": "Matteo Spinelli <matteo@cubiq.org> (http://cubiq.org)",
   "keywords": [
@@ -13,6 +13,10 @@
     "mobile",
     "desktop"
   ],
+  "scripts": {
+    "build": "node build.js dist",
+    "prepublish": "npm run build"
+  },
   "main": "build/iscroll.js",
   "devDependencies": {
     "jshint": "~2.9.1",
