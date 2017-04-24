@@ -1,4 +1,4 @@
-/*! iScroll v15.2.1 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
+/*! iScroll v15.2.2 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
 	window.webkitRequestAnimationFrame	||
@@ -351,7 +351,8 @@ function IScroll (el, options) {
 		bindToWrapper: typeof window.onmousedown === "undefined",
 
 		// add support for pull down refresh
-		minScrollY: 0,
+		topOffset: 0,
+		minScrollY: Infinity,
 	};
 
 	for ( var i in options ) {
@@ -419,7 +420,7 @@ function IScroll (el, options) {
 }
 
 IScroll.prototype = {
-	version: '15.2.1',
+	version: '15.2.2',
 
 	_init: function () {
 		this._initEvents();
@@ -597,7 +598,9 @@ IScroll.prototype = {
 		if ( newY > 0 || newY < this.maxScrollY ) {
 			newY = this.options.bounce ? this.y + deltaY / 3 : newY > 0 ? 0 : this.maxScrollY;
 		}
-
+		if (newY > this.options.minScrollY) {
+			newY = this.options.minScrollY;
+		}
 		this.directionX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
 		this.directionY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
 
@@ -741,10 +744,16 @@ IScroll.prototype = {
 			x = this.maxScrollX;
 		}
 
-		if ( !this.hasVerticalScroll || this.y > 0 ) {
-			y = 0;
-		} else if ( this.y < this.maxScrollY && this.y > this.minScrollY) {
-			y = this.maxScrollY;
+ 		if ( !this.hasVerticalScroll ) {
+ 			y = 0;
+		} else {
+			if ( this.y < this.maxScrollY ) {
+				y = this.maxScrollY;
+			} else if ( this.y > this.options.topOffset ) {
+				y = this.options.topOffset;
+			} else {
+				y = this.y;
+			}
 		}
 
 		if ( x == this.x && y == this.y ) {
@@ -795,7 +804,7 @@ IScroll.prototype = {
 
 		if ( !this.hasVerticalScroll ) {
 			this.maxScrollY = 0;
-			this.scrollerHeight = this.wrapperHeight;
+			this.scrollerHeight = this.scroller.offsetHeight - this.options.topOffset;
 		}
 
 		this.endTime = 0;
