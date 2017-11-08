@@ -1,4 +1,4 @@
-/*! iScroll v15.2.4 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
+/*! iScroll v15.2.5 ~ (c) 2008-2017 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
 	window.webkitRequestAnimationFrame	||
@@ -343,9 +343,14 @@ function IScroll (el, options) {
 		useTransform: true,
 		bindToWrapper: typeof window.onmousedown === "undefined",
 
-		// add support for pull down refresh
+		// add support for pull down/up refresh
+		enablePullDown: false,
 		topOffset: 0,
-		minScrollY: Infinity,
+		minScrollYOffset: Infinity,
+
+		enablePullUp: false,
+		bottomOffset: 0,
+		maxScrollYOffset: Infinity,
 	};
 
 	for ( var i in options ) {
@@ -403,7 +408,7 @@ function IScroll (el, options) {
 }
 
 IScroll.prototype = {
-	version: '15.2.4',
+	version: '15.2.5',
 
 	_init: function () {
 		this._initEvents();
@@ -565,8 +570,13 @@ IScroll.prototype = {
 		if ( newY > 0 || newY < this.maxScrollY ) {
 			newY = this.options.bounce ? this.y + deltaY / 3 : newY > 0 ? 0 : this.maxScrollY;
 		}
-		if (newY > this.options.minScrollY) {
-			newY = this.options.minScrollY;
+		var minScrollYOffset = this.options.enablePullDown ? this.options.minScrollYOffset : 0;
+		if (newY > minScrollYOffset) {
+			newY = minScrollYOffset;
+		}
+		var maxScrollYOffset = this.options.enablePullUp ? this.options.maxScrollYOffset : 0;
+		if (newY < this.maxScrollY - maxScrollYOffset) {
+			newY = this.maxScrollY - maxScrollYOffset;
 		}
 		this.directionX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
 		this.directionY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
@@ -658,9 +668,14 @@ IScroll.prototype = {
 				easing = utils.ease.quadratic;
 			}
 
-			// prevent auto scroll to pull down
+			// prevent trigging pull down when auto scroll
 			if ( newY > 0) {
 				newY = 0;
+			}
+
+			// prevent trigging pull up when auto scroll
+			if ( newY < this.maxScrollY) {
+				newY = this.maxScrollY;
 			}
 
 			this.scrollTo(newX, newY, time, easing);
@@ -695,10 +710,12 @@ IScroll.prototype = {
  		if ( !this.hasVerticalScroll ) {
  			y = 0;
 		} else {
-			if ( this.y < this.maxScrollY ) {
-				y = this.maxScrollY;
-			} else if ( this.y > this.options.topOffset ) {
-				y = this.options.topOffset;
+			var bottomOffset = this.options.enablePullUp ? this.options.bottomOffset : 0;
+			var topOffset = this.options.enablePullDown ? this.options.topOffset : 0;
+			if ( this.y < this.maxScrollY - bottomOffset ) {
+				y = this.maxScrollY - bottomOffset;
+			} else if ( this.y > topOffset ) {
+				y = topOffset;
 			} else {
 				y = this.y;
 			}
