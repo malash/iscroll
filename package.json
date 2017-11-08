@@ -1,7 +1,7 @@
 {
   "name": "@tencent/news-iscroll",
   "description": "Smooth scrolling for the web",
-  "version": "15.2.4",
+  "version": "15.2.5",
   "homepage": "http://iscrolljs.com",
   "author": "Matteo Spinelli <matteo@cubiq.org> (http://cubiq.org)",
   "keywords": [
