@@ -354,10 +354,12 @@ function IScroll (el, options) {
 
 		// add support for pull down/up refresh
 		enablePullDown: false,
+		pullDownInertiaLimit: 0,
 		topOffset: 0,
 		minScrollYOffset: Infinity,
 
 		enablePullUp: false,
+		pullUpInertiaLimit: 0,
 		bottomOffset: 0,
 		maxScrollYOffset: Infinity,
 	};
@@ -723,13 +725,13 @@ IScroll.prototype = {
 			}
 
 			// prevent trigging pull down when auto scroll
-			if ( newY > 0) {
-				newY = 0;
+			if ( newY > this.options.pullDownInertiaLimit) {
+				newY = this.options.pullDownInertiaLimit;
 			}
 
 			// prevent trigging pull up when auto scroll
-			if ( newY < this.maxScrollY) {
-				newY = this.maxScrollY;
+			if ( newY < this.maxScrollY - this.options.pullUpInertiaLimit) {
+				newY = this.maxScrollY - this.options.pullUpInertiaLimit;
 			}
 
 			this.scrollTo(newX, newY, time, easing);
